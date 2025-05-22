@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Show me total sales by product in the Apex system",
+    "sql": "SELECT p.ProductName, SUM(s.Amount) as TotalSales FROM Apex.Products p JOIN Apex.Sales s ON p.ProductID = s.ProductID GROUP BY p.ProductName ORDER BY TotalSales DESC"
+  },
+  {
+    "question": "Who are the top 5 customers in the Apex database by purchase amount?",
+    "sql": "SELECT TOP 5 c.CustomerName, SUM(s.Amount) as TotalPurchases FROM Apex.Customers c JOIN Apex.Sales s ON c.CustomerID = s.CustomerID GROUP BY c.CustomerName ORDER BY TotalPurchases DESC"
+  },
+  {
+    "question": "What's the average transaction amount in the Apex system grouped by month for this year?",
+    "sql": "SELECT MONTH(TransactionDate) as Month, AVG(Amount) as AvgTransactionAmount FROM Apex.Transactions WHERE YEAR(TransactionDate) = YEAR(GETDATE()) GROUP BY MONTH(TransactionDate) ORDER BY Month"
+  },
+  {
+    "question": "Show me all outstanding invoices in the Apex system",
+    "sql": "SELECT InvoiceNumber, CustomerName, Amount, DueDate FROM Apex.Invoices i JOIN Apex.Customers c ON i.CustomerID = c.CustomerID WHERE PaymentStatus = 'Outstanding' ORDER BY DueDate"
+  },
+  {
+    "question": "What regions have the highest sales in the Apex database?",
+    "sql": "SELECT r.RegionName, SUM(s.Amount) as TotalSales FROM Apex.Regions r JOIN Apex.Customers c ON r.RegionID = c.RegionID JOIN Apex.Sales s ON c.CustomerID = s.CustomerID GROUP BY r.RegionName ORDER BY TotalSales DESC"
+  }
+]

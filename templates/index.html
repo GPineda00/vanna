@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DinaCortex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- ADDED Font Awesome -->    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap">
+    <style>
+        /* DARK MODE MODERNIZED STYLES - GEMINI INSPIRED */        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #0d0d0d;
+            --card-bg: #242424;
+            --input-bg: #2d2d2d;
+            --primary-blue: #8bb5f9;
+            --primary-blue-light: #aecbfa;
+            --primary-blue-dark: #669df6;
+            --text-light: #e8eaed;
+            --text-secondary: #bdc1c6;
+            --text-faded: #9aa0a6;
+            --border-color: #3c4043;
+            --divider-color: #3c4043;
+            --success-color: #81c995;
+            --error-color: #f28b82;
+            --warning-color: #fdd663;
+            --info-color: #8ab4f8;
+            --border-radius: 12px;
+            --input-border-radius: 24px;
+            --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            --glow-effect: 0 0 8px rgba(138, 180, 248, 0.25);
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            font-family: 'Google Sans', 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-light);
+            padding: 0;
+            margin: 0;
+            line-height: 1.6;
+        }          .header {
+            background: var(--darker-bg);
+            color: var(--text-light);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-blue-light), var(--primary-blue));
+        }
+        
+        .app-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .logo-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.2) 0%, rgba(138, 180, 248, 0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            z-index: 1;
+        }
+        
+        .brand-logo {
+            font-size: 24px;
+            color: var(--primary-blue-light);
+            z-index: 2;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.75rem;
+            margin: 0;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, var(--primary-blue-light), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 900px; /* Narrower for more Gemini-like focused feel */
+        }
+          .card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: linear-gradient(145deg, var(--card-bg) 0%, rgba(44, 44, 44, 0.9) 100%);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: rgba(138, 180, 248, 0.1);
+            color: var(--primary-blue);
+            font-weight: 500;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-body {
+            padding: 1.75rem;
+        }        .form-control {
+            padding: 0.9rem 1.25rem;
+            border-radius: var(--input-border-radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset;
+            animation: subtle-glow 3s infinite alternate;
+        }
+        
+        @keyframes subtle-glow {
+            from { box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset; }
+            to { box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset, 0 0 5px rgba(138, 180, 248, 0.2); }
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 1px var(--primary-blue), var(--glow-effect);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            animation: none;
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-faded);
+        }
+          .btn {
+            border-radius: 24px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.25s ease;
+            text-transform: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:focus:not(:active)::after {
+            animation: ripple 0.8s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #202124; /* Dark text on light button */
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-blue-light);
+            border-color: var(--primary-blue-light);
+            box-shadow: var(--glow-effect);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            background-color: var(--primary-blue-dark) !important;
+            border-color: var(--primary-blue-dark) !important;
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) inset;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: #202124;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+            color: #202124;
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+            color: #202124;
+        }.sql-code {
+            background-color: var(--darker-bg);
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            border-left: 4px solid var(--primary-blue);
+            color: var(--text-light);
+            margin: 15px 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* SQL syntax highlighting */
+        .sql-code .keyword {
+            color: #ff79c6;
+            font-weight: 500;
+        }
+        
+        .sql-code .table-name { /* For table names like in table.column */
+            color: #50fa7b;
+        }
+        
+        .sql-code .column { /* For column names like in table.column */
+            color: #8be9fd;
+        }
+
+        .sql-code .function { /* For function_name() */
+            color: #ffb86c; /* Orange */
+        }
+        
+        .sql-code .number {
+            color: #bd93f9;
+        }
+        
+        .sql-code .string {
+            color: #f1fa8c;
+        }
+        
+        .sql-code .operator {
+            color: #ff79c6;
+        }
+
+        .sql-code .comment {
+            color: #6272a4; /* Dracula comment color */
+            font-style: italic;
+        }
+        
+        .sql-code::before {
+            content: 'SQL';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(138, 180, 248, 0.2);
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .result-table {
+            margin-top: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        .table thead th {
+            background-color: rgba(138, 180, 248, 0.15);
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            font-weight: 500;
+        }
+        
+        .table tbody td {
+            border-bottom: 1px solid var(--divider-color);
+            padding: 12px 16px;
+            color: white; /* Added to make table data text white */
+        }
+
+        /* Ensure data output table text is white */
+        #data-output .table tbody td {
+            color: white !important;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading .spinner-border {
+            color: var(--primary-blue) !important;
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        /* Custom alerts for dark theme */
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+            padding: 16px 20px;
+        }
+        
+        .alert-success { 
+            background-color: rgba(129, 201, 149, 0.2); 
+            color: var(--success-color); 
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-danger { 
+            background-color: rgba(242, 139, 130, 0.2); 
+            color: var(--error-color); 
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .alert-warning { 
+            background-color: rgba(253, 214, 99, 0.2); 
+            color: var(--warning-color); 
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .alert-info, .alert-primary { 
+            background-color: rgba(138, 180, 248, 0.2); 
+            color: var(--info-color); 
+            border-left: 4px solid var(--info-color);
+        }        /* Tab navigation - Gemini-style */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .nav-tabs::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, 
+                rgba(138, 180, 248, 0),
+                rgba(138, 180, 248, 0.3) 25%,
+                rgba(138, 180, 248, 0.3) 75%,
+                rgba(138, 180, 248, 0)
+            );
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            padding: 14px 24px;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            border-radius: 0;
+            position: relative;
+            opacity: 0.7;
+        }
+        
+        .nav-tabs .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-blue-light), var(--primary-blue));
+            transform: scaleX(0);
+            transition: transform 0.3s ease-out;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--text-light);
+            background-color: transparent;
+            opacity: 1;
+        }
+        
+        .nav-tabs .nav-link:hover::before {
+            transform: scaleX(0.5);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-blue);
+            border-bottom-color: transparent;
+            background-color: transparent;
+            opacity: 1;
+        }
+        
+        .nav-tabs .nav-link.active::before {
+            transform: scaleX(1);
+        }
+        
+        .nav-tabs .nav-link i {
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tabs .nav-link:hover i,
+        .nav-tabs .nav-link.active i {
+            transform: translateY(-2px);
+        }/* History styles */
+        .history-item {
+            padding: 18px;
+            border-left: 4px solid var(--primary-blue);
+            background: linear-gradient(145deg, var(--card-bg) 0%, rgba(41, 41, 41, 0.85) 100%);
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .history-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-blue-light), var(--primary-blue-dark));
+            opacity: 0.7;
+        }
+        
+        .history-item:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #2a2a2a 0%, rgba(48, 48, 48, 0.9) 100%);
+            border-color: var(--primary-blue-light);
+            transform: translateY(-2px);
+        }
+        
+        .history-item:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(138, 180, 248, 0) 0%, rgba(138, 180, 248, 0.1) 100%);
+            pointer-events: none;
+            animation: slideIn 0.4s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .history-item h5 {
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .history-item .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        .history-item .small {
+            font-size: 0.85rem;
+            margin-bottom: 6px !important;
+        }
+        
+        .history-item .time {
+            color: var(--text-faded);
+            font-size: 0.8rem;
+        }
+          .history-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+            background: linear-gradient(145deg, var(--card-bg) 0%, rgba(40, 40, 40, 0.9) 100%);
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .history-empty::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(138, 180, 248, 0.03) 0%, rgba(138, 180, 248, 0) 70%);
+            animation: gentle-pulse 10s infinite ease-in-out;
+            pointer-events: none;
+        }
+        
+        @keyframes gentle-pulse {
+            0% { transform: scale(0.85); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.15); opacity: 0; }
+        }
+        
+        /* Card section headers */
+        h5 {
+            color: var(--primary-blue-light);
+            font-weight: 500;
+            margin-top: 1.25rem;
+        }
+          /* Direct answer styling */ 
+        .direct-answer {
+            background: linear-gradient(135deg, rgba(138, 180, 248, 0.07) 0%, rgba(138, 180, 248, 0.12) 100%);
+            border-radius: var(--border-radius);
+            padding: 1.7rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .direct-answer:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+            transform: translateY(-2px);
+        }
+        
+        .direct-answer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(138, 180, 248, 0.08) 0%, rgba(138, 180, 248, 0) 70%);
+            opacity: 0;
+            animation: pulse 8s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
+        
+        .direct-answer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(138, 180, 248, 0) 0%, rgba(138, 180, 248, 0.15) 100%);
+            pointer-events: none;
+        }
+        
+        /* Custom switch for dark theme */
+        .form-switch .form-check-input {
+            background-color: var(--darker-bg);
+            border-color: var(--border-color);
+        }
+        
+        .form-switch .form-check-input:checked {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+          /* Fixing Bootstrap dark theme issues */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text-light);
+            -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+          /* Dark scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-blue-dark);
+        }
+        
+        /* Wave effect animation */
+        @keyframes wave-out {
+            0% {
+                transform: scaleX(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scaleX(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>    <header class="header text-center">
+        <div class="container">
+            <div class="app-brand mb-4">
+                <div class="logo-wrapper">
+                    <i class="fas fa-robot brand-logo"></i>
+                </div>
+                <h1><span class="gradient-text">DinaCortex</span></h1>
+            </div>
+            <div id="status-indicator" class="alert alert-success d-none mx-auto mt-3" style="max-width: 500px; background-color: rgba(129, 201, 149, 0.2); color: var(--success-color); border: none; border-left: 4px solid var(--success-color);">
+                <i class="fas fa-check-circle me-2"></i> All systems operational
+            </div>
+            <div id="ollama-error" class="alert alert-danger d-none mx-auto mt-3" style="max-width: 500px; background-color: rgba(242, 139, 130, 0.2); color: var(--error-color); border: none; border-left: 4px solid var(--error-color);">
+                <i class="fas fa-exclamation-triangle me-2"></i> Ollama service is not running
+                <button id="restart-ollama" class="btn btn-sm btn-warning ms-2" style="color: #202124;">
+                    <i class="fas fa-sync-alt me-1"></i> Restart Ollama
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-4"> <!-- Added mt-4 for spacing -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="query-tab" data-bs-toggle="tab" data-bs-target="#query-tab-pane"
+                        type="button" role="tab" aria-controls="query-tab-pane" aria-selected="true">
+                    <i class="fas fa-question-circle me-2"></i>Ask Question
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane"
+                        type="button" role="tab" aria-controls="history-tab-pane" aria-selected="false">
+                    <i class="fas fa-history me-2"></i>History
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content pt-3" id="myTabContent"> <!-- Added pt-3 for spacing below tabs -->
+            <!-- Query Tab Pane -->
+            <div class="tab-pane fade show active" id="query-tab-pane" role="tabpanel" aria-labelledby="query-tab">                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-4 position-relative">
+                            <input type="text" id="question-input" class="form-control form-control-lg" 
+                                   placeholder="Ask a question about your data...">
+                            <button id="ask-button" class="btn btn-primary position-absolute" 
+                                   style="right: 6px; top: 6px; height: calc(100% - 12px); padding: 0 1.5rem;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                          <div id="loading" class="loading mt-4">
+                            <div class="spinner-border" role="status" style="color: var(--primary-blue) !important;">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3" style="color: var(--primary-blue-light);">Processing your query...</p>
+                        </div>                        <div id="results" class="mt-4" style="display: none; opacity: 0; transition: opacity 0.3s ease-in-out;">
+                            <h5><i class="fas fa-code me-2"></i>Generated SQL:</h5>
+                            <div id="sql-output" class="sql-code"></div>
+                            
+                            <h5 class="mt-4"><i class="fas fa-table me-2"></i>Results:</h5>
+                            <div id="data-output" class="result-table"></div>
+
+                            <!-- ADDED Explanation Section -->                            <div id="explanation-section" style="display: none;">
+                                <h5 class="mt-4"><i class="fas fa-lightbulb me-2"></i>Interpretation:</h5>
+                                <div id="explanation-output" class="direct-answer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Tab Pane -->
+            <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="history-list">
+                            <!-- Initial empty state will be rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Store chat history in memory
+        let chatHistory = [];
+
+        document.getElementById('ask-button').addEventListener('click', async () => {
+            const question = document.getElementById('question-input').value.trim();
+            if (!question) return;
+              document.getElementById('loading').style.display = 'block';
+            const resultsElement = document.getElementById('results');
+            resultsElement.style.opacity = '0'; // Reset opacity
+            resultsElement.style.display = 'none';
+            const dataOutput = document.getElementById('data-output');
+            const sqlOutput = document.getElementById('sql-output');
+            const explanationSection = document.getElementById('explanation-section'); // Added
+            const explanationOutput = document.getElementById('explanation-output'); // Added
+            
+            // Clear previous results
+            sqlOutput.innerHTML = '';
+            dataOutput.innerHTML = '';
+            explanationOutput.innerHTML = ''; // Added
+            explanationSection.style.display = 'none'; // Added
+
+            let historyItem = { 
+                id: Date.now().toString(), 
+                question, 
+                timestamp: new Date(), 
+                success: false // Default to false
+            };
+
+            try {
+                try {
+                    const response = await fetch('/api/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question })
+                    });
+                    const result = await response.json();                    if (response.ok) {
+                        historyItem.success = true;                        
+                        if (result.direct_answer) {
+                            sqlOutput.innerHTML = `
+                                <div class="alert alert-info">
+                                    <i class="fas fa-comment me-2"></i>
+                                    <strong>Direct Answer:</strong> This question was answered directly by the assistant using its general knowledge. 
+                                    No database query was executed.
+                                </div>`;
+                            
+                            dataOutput.innerHTML = `
+                                <div class="direct-answer">
+                                    <i class="fas fa-robot mb-3" style="color: var(--primary-blue); font-size: 1.2em;"></i>
+                                    <div style="padding: 10px; font-size: 1.1em; line-height: 1.7;">
+                                        ${result.direct_answer}
+                                    </div>
+                                </div>`;
+                            historyItem.direct_answer = result.direct_answer;                        } else if (result.sql) {
+                            sqlOutput.innerHTML = highlightSQL(result.sql);
+                            historyItem.sql = result.sql;
+
+                            if (result.data && Array.isArray(result.data)) {
+                                if (result.data.length > 0) {
+                                    if (typeof result.data[0] === 'object' && result.data[0] !== null) {
+                                        const table = document.createElement('table');
+                                        table.className = 'table table-striped table-bordered';
+
+                                        const thead = document.createElement('thead');
+                                        const headerRow = document.createElement('tr');
+                                        const headers = Object.keys(result.data[0]);
+                                        
+                                        headers.forEach(key => {
+                                            const th = document.createElement('th');
+                                            th.textContent = key;
+                                            headerRow.appendChild(th);
+                                        });
+                                        thead.appendChild(headerRow);
+                                        table.appendChild(thead);
+
+                                        const tbody = document.createElement('tbody');
+                                        result.data.forEach(row => {
+                                            if (typeof row === 'object' && row !== null) {
+                                                const tr = document.createElement('tr');
+                                                headers.forEach(header => {
+                                                    const td = document.createElement('td');
+                                                    const cellValue = row[header];
+                                                    td.textContent = cellValue !== null && cellValue !== undefined ? cellValue : 'NULL';
+                                                    td.style.color = 'white'; // Explicitly set text color to white
+                                                    tr.appendChild(td);
+                                                });
+                                                tbody.appendChild(tr);
+                                            } else {
+                                                console.warn("Skipping a row in data result as it's not an object:", row);
+                                            }
+                                        });
+                                        table.appendChild(tbody);
+                                        dataOutput.innerHTML = ''; // Clear previous content (e.g., error messages)
+                                        dataOutput.appendChild(table);
+                                    } else {
+                                        dataOutput.innerHTML = '<div class="alert alert-danger">Data received from server is not in the expected format (should be an array of objects).</div>';
+                                        historyItem.error = 'Data format error: first item not an object.';
+                                    }
+                                } else {
+                                    dataOutput.innerHTML = '<div class="alert alert-warning">The SQL query was generated and executed, but no data was returned from the database.</div>';
+                                }
+                            } else if (result.data) {
+                                // result.data exists but is not an array
+                                dataOutput.innerHTML = '<div class="alert alert-danger">Data received from server is not in the expected array format.</div>';
+                                historyItem.error = 'Data format error: not an array.';
+                            } else {
+                                // result.data is null or undefined, but SQL was present.
+                                dataOutput.innerHTML = '<div class="alert alert-info">SQL query was generated, but no dataset was provided with the result. This might be expected for DDL statements or queries that don\'t return rows.</div>';
+                            }                            // Display interpretation if provided
+                            if (result.interpretation) {
+                                explanationOutput.innerHTML = `<i class="fas fa-robot mb-3" style="color: var(--primary-blue); font-size: 1.2em;"></i>
+                                                             <div style="padding: 10px; font-size: 1.1em; line-height: 1.7;">
+                                                                 ${result.interpretation}
+                                                             </div>`;
+                                explanationSection.style.display = 'block';
+                                historyItem.interpretation = result.interpretation;
+                            } else {
+                                explanationSection.style.display = 'none';
+                            }
+                        } else { // OK response but no direct_answer and no sql
+                            sqlOutput.textContent = 'No SQL query generated.';
+                            dataOutput.innerHTML = '<div class="alert alert-warning">The assistant provided a response, but it could not be displayed as expected (no SQL and no direct answer).</div>';
+                            historyItem.error = 'Unexpected response format from server.';
+                        }
+                    } else { // response not ok (API error)
+                        historyItem.error = result.error || `API error: ${response.status}`;
+                        if (result.error_type && (result.error_type.includes('ollama') || (result.error && result.error.toLowerCase().includes('ollama')))) {
+                            const errorMsgContent = result.error || 'The Ollama service may be down or experiencing issues.';
+                            sqlOutput.textContent = 'ERROR: Unable to generate SQL (Ollama Issue)';                            dataOutput.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <strong>Ollama Service Error:</strong> ${errorMsgContent}
+                                    <hr style="border-color: rgba(242, 139, 130, 0.3);">
+                                    <p>Please try the following:</p>
+                                    <ol style="color: var(--text-light);">
+                                        <li>Check if Ollama is running on your system.</li>
+                                        <li>Try restarting the Ollama service.</li>
+                                        <li>Ensure the AI model is correctly loaded and accessible.</li>
+                                    </ol>
+                                    <div class="mt-3">
+                                        <button id="check-status-btn-inline" class="btn btn-sm btn-info me-2" style="color: #202124;"><i class="fas fa-sync me-1"></i> Check System Status</button>
+                                        <button id="restart-ollama-btn-inline" class="btn btn-sm btn-warning" style="color: #202124;"><i class="fas fa-power-off me-1"></i> Restart Ollama</button>
+                                    </div>
+                                </div>`;
+                            if(document.getElementById('check-status-btn-inline')) {
+                                document.getElementById('check-status-btn-inline').addEventListener('click', checkSystemStatus);
+                            }
+                            if(document.getElementById('restart-ollama-btn-inline')) {
+                                document.getElementById('restart-ollama-btn-inline').addEventListener('click', handleRestartOllama);
+                            }
+                        } else if (result.error && result.error.toLowerCase().includes('database error')) {
+                            sqlOutput.textContent = 'ERROR: Database communication issue';                            dataOutput.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <strong>Database Error:</strong> ${result.error}
+                                    <hr style="border-color: rgba(242, 139, 130, 0.3);">
+                                    <p>There was an error connecting to or querying the database. Please check your database configuration and ensure the service is running.</p>
+                                </div>`;
+                        } else { // Other API errors
+                            sqlOutput.textContent = 'API Error';
+                            dataOutput.innerHTML = `<div class="alert alert-danger">Error: ${result.error || 'An unknown error occurred with the API.'}</div>`;
+                        }
+                    }                } catch (error) { // Inner catch for fetch/network errors or JSON parsing errors
+                    console.error('Error fetching/parsing API response:', error);
+                    sqlOutput.textContent = 'Error communicating with the server.';
+                    dataOutput.innerHTML = `<div class="alert alert-danger">Network or server communication error: ${error.message}. Please check your connection and the server status.</div>`;
+                    historyItem.error = `Network/Fetch error: ${error.message}`;
+                }
+            } catch (error) { // Outer catch for unexpected client-side JS errors
+                console.error('Error in ask-button handler:', error);
+                sqlOutput.textContent = 'An unexpected client-side error occurred.';
+                dataOutput.innerHTML = `<div class="alert alert-danger">An unexpected error occurred while processing your request: ${error.message}</div>`;
+                historyItem.error = `Client-side JS error: ${error.message}`; // Log client-side error to history too
+            } finally {                document.getElementById('loading').style.display = 'none';
+                const resultsElement = document.getElementById('results');
+                resultsElement.style.display = 'block';
+                setTimeout(() => {
+                    resultsElement.style.opacity = '1'; // Fade in results with smooth animation
+                }, 10); // Small delay to ensure display:block has taken effect
+                
+                // Add cool wave effect to the results container
+                const wave = document.createElement('div');
+                wave.classList.add('result-wave');
+                wave.style.cssText = `
+                    position: absolute;
+                    top: -10px;
+                    left: 0;
+                    right: 0;
+                    height: 10px;
+                    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-blue-light) 50%, var(--primary-blue) 100%);
+                    border-radius: 50%;
+                    opacity: 0.3;
+                    transform: scaleX(0);
+                    animation: wave-out 0.8s ease-in-out forwards;
+                `;
+                resultsElement.style.position = 'relative';
+                resultsElement.appendChild(wave);
+                
+                chatHistory.unshift(historyItem); // Add to history regardless of path, success flag indicates outcome
+                updateHistoryUI();
+            }
+        });
+        
+        // Removed train-button event listener as the section is gone.
+
+        function updateHistoryUI() {
+            const historyList = document.getElementById('history-list');
+            if (!historyList) return;            if (chatHistory.length === 0) {
+                historyList.innerHTML = `
+                    <div class="history-empty">
+                        <i class="fas fa-history fa-3x mb-3" style="color: var(--primary-blue); opacity: 0.7;"></i>
+                        <h5 style="color: var(--primary-blue-light); margin-top: 1rem;">No history yet</h5>
+                        <p style="color: var(--text-secondary); max-width: 80%; margin: 1rem auto;">
+                            Your query history will appear here once you ask some questions about your data.
+                        </p>
+                        <div class="mt-4">
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('query-tab').click();">
+                                <i class="fas fa-question-circle me-2"></i>Ask a Question Now
+                            </button>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            historyList.innerHTML = ''; // Clear previous items
+            chatHistory.forEach(item => {
+                const historyEl = document.createElement('div');
+                historyEl.className = 'history-item';
+                historyEl.dataset.id = item.id;
+                
+                const timestamp = new Date(item.timestamp).toLocaleString();
+                let itemContent = '';
+                const questionDisplay = truncateText(item.question, 150); // Truncate long questions in history display
+                
+                if (item.success) {
+                    const titleColor = 'var(--primary-blue)';
+                    itemContent = `
+                        <h5 style="color: ${titleColor};"><i class="fas fa-check-circle text-success me-2"></i>${questionDisplay}</h5>
+                        ${item.sql ? `<div class="text-muted small mb-2"><strong style="color: var(--primary-blue-light);">SQL:</strong> <span style="color: var(--text-secondary);">${truncateText(item.sql, 100)}</span></div>` : ''}
+                        ${item.direct_answer ? `<div class="text-muted small mb-2"><strong style="color: var(--primary-blue-light);">Answer:</strong> <span style="color: var(--text-secondary);">${truncateText(item.direct_answer, 100)}</span></div>` : ''}
+                        ${item.interpretation ? `<div class="text-muted small mb-2"><strong style="color: var(--primary-blue-light);">Interpretation:</strong> <span style="color: var(--text-secondary);">${truncateText(item.interpretation, 100)}</span></div>` : ''} <!-- Show interpretation in history -->
+                        <div class="time"><i class="fas fa-clock me-1"></i>${timestamp}</div>
+                    `;
+                } else {
+                    const titleColor = 'var(--error-color)';
+                    itemContent = `
+                        <h5 style="color: ${titleColor};"><i class="fas fa-times-circle text-danger me-2"></i>${questionDisplay}</h5>
+                        <div class="text-muted small mb-2"><strong style="color: var(--error-color);">Error:</strong> <span style="color: var(--text-secondary);">${truncateText(item.error || 'No error message provided', 150)}</span></div>
+                        <div class="time"><i class="fas fa-clock me-1"></i>${timestamp}</div>
+                    `;
+                }
+                historyEl.innerHTML = itemContent;
+                
+                historyEl.addEventListener('click', () => {
+                    document.getElementById('question-input').value = item.question; // Populate original question
+                    const queryTabButton = document.getElementById('query-tab');
+                    if (queryTabButton && typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                        new bootstrap.Tab(queryTabButton).show();
+                    } else if (queryTabButton) {
+                        queryTabButton.click(); // Fallback
+                    }
+                    // Consider whether to auto-submit or let user click "Ask"
+                    // document.getElementById('ask-button').click(); 
+                });
+                historyList.appendChild(historyEl);
+            });
+        }        function highlightSQL(sql) {
+            if (!sql) return '';
+            
+            // Escape HTML characters first to prevent misinterpretation of SQL content as HTML
+            let highlightedSQL = sql
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Define regex patterns for SQL syntax elements
+            const patterns = {
+                comments_multiline: /\/\*[\s\S]*?\*\//g,    // Matches /* multi-line comment */
+                comments_singleline: /--[^\r\n]*/g,        // Matches -- single-line comment
+                strings: /'((?:[^']|'')*)'/g,          // Matches 'string content', handling '' as escaped quote. $1 is content.
+                numbers: /\b\d+(\.\d+)?\b/g,             // Matches numbers like 123 or 45.67
+                functions: /\b([a-zA-Z_][a-zA-Z0-9_]*)\b(?=\s*\()/g, // Matches function_name before an opening parenthesis
+                keywords: /\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|INSERT|UPDATE|DELETE|INTO|VALUES|SET|CREATE|TABLE|INDEX|VIEW|WITH|AS|ON|AND|OR|NOT|NULL|IS|IN|LIKE|BETWEEN|CASE|WHEN|THEN|ELSE|END|ASC|DESC|DISTINCT|COUNT|SUM|AVG|MIN|MAX)\b/gi,
+                tables: /\b([a-zA-Z_][a-zA-Z0-9_]+)(?=\s*\.)/g, // Matches table_name before a dot (improved to allow optional space)
+                columns: /\.([a-zA-Z_][a-zA-Z0-9_]+)\b/g,       // Matches .column_name
+                operators: /(\+|\-|\*|\/|=|<>|>=|<=|>|<|!=|\|\||\b(?:AND|OR|NOT)\b)/gi // Added ||, AND, OR, NOT as operators for styling if not keywords
+            };
+            
+            // Apply highlighting classes - Order is crucial to prevent incorrect matches
+
+            // 1. Comments (should be processed first)
+            highlightedSQL = highlightedSQL.replace(patterns.comments_multiline, '<span class="comment">$&</span>');
+            highlightedSQL = highlightedSQL.replace(patterns.comments_singleline, '<span class="comment">$&</span>');
+            
+            // 2. Strings
+            highlightedSQL = highlightedSQL.replace(patterns.strings, '<span class="string">$&</span>');
+            
+            // 3. Numbers
+            highlightedSQL = highlightedSQL.replace(patterns.numbers, '<span class="number">$&</span>');
+            
+            // 4. Functions (before keywords, as function names might contain keywords)
+            highlightedSQL = highlightedSQL.replace(patterns.functions, '<span class="function">$&</span>');
+
+            // 5. Keywords
+            highlightedSQL = highlightedSQL.replace(patterns.keywords, '<span class="keyword">$&</span>');
+            
+            // 6. Tables (schema.table not handled here, only table.)
+            highlightedSQL = highlightedSQL.replace(patterns.tables, '<span class="table-name">$1</span>');
+            
+            // 7. Columns
+            highlightedSQL = highlightedSQL.replace(patterns.columns, '.<span class="column">$1</span>');
+            
+            // 8. Operators (some keywords like AND, OR, NOT might be styled as operators if not caught by keyword regex first, which is fine)
+            // The keyword regex is case-insensitive (gi), so it should catch AND/OR/NOT as keywords.
+            // The operator regex for AND/OR/NOT is a fallback or for specific styling if needed.
+            // For simplicity, let's remove AND/OR/NOT from operators if keywords handle them.
+            const operatorPattern = /(\+|\-|\*|\/|=|<>|>=|<=|>|<|!=|\|\|)/g;
+            highlightedSQL = highlightedSQL.replace(operatorPattern, '<span class="operator">$&</span>');
+                
+            return highlightedSQL;
+        }
+
+        function truncateText(text, maxLength) {
+            if (typeof text !== 'string') return ''; // Handle non-string inputs
+            if (text.length > maxLength) {
+                return text.substring(0, maxLength) + '...';
+            }
+            return text;
+        }
+
+        async function checkSystemStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const ollamaErrorDiv = document.getElementById('ollama-error');
+            try {
+                const response = await fetch('/api/health');
+                if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
+                const result = await response.json();
+                
+                statusIndicator.classList.remove('alert-success', 'alert-warning', 'alert-danger'); // Reset classes
+
+                if (result.ollama_status === 'ok' && result.database_status === 'ok') {
+                    statusIndicator.innerHTML = '<i class="fas fa-check-circle me-2"></i>All systems operational';
+                    statusIndicator.classList.add('alert-success');
+                    statusIndicator.classList.remove('d-none');
+                    ollamaErrorDiv.classList.add('d-none');
+                } else {
+                    let statusMessage = '<i class="fas fa-exclamation-triangle me-2"></i>System Status: ';
+                    let alertClass = 'alert-warning';
+                    
+                    if (result.ollama_status !== 'ok') {
+                        statusMessage += 'Ollama service issue. ';
+                        ollamaErrorDiv.classList.remove('d-none');
+                        alertClass = 'alert-danger'; // Escalate to danger if critical component is down
+                    } else {
+                        ollamaErrorDiv.classList.add('d-none');
+                    }
+                    
+                    if (result.database_status !== 'ok') {
+                        statusMessage += 'Database connection issue. ';
+                        alertClass = 'alert-danger';
+                    }
+                    statusIndicator.innerHTML = statusMessage;
+                    statusIndicator.classList.add(alertClass);
+                    statusIndicator.classList.remove('d-none');
+                }
+            } catch (error) {
+                console.error('Error checking system status:', error);
+                statusIndicator.innerHTML = '<i class="fas fa-question-circle me-2"></i>System status: Unable to check';
+                statusIndicator.classList.remove('d-none', 'alert-success', 'alert-danger');
+                statusIndicator.classList.add('alert-warning');
+                ollamaErrorDiv.classList.add('d-none'); // Hide specific Ollama error if general check fails
+            }
+        }
+        
+        async function handleRestartOllama() {
+            const restartButton = document.getElementById('restart-ollama') || document.getElementById('restart-ollama-btn-inline');
+            if (!restartButton) return;
+
+            const originalButtonText = restartButton.innerHTML;
+            restartButton.disabled = true;
+            restartButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Restarting...';
+            
+            try {
+                const response = await fetch('/api/restart-ollama', { method: 'POST' });
+                const result = await response.json(); // Try to parse JSON regardless of response.ok
+                
+                if (response.ok && result.message && result.message.includes('success')) {
+                    alert('Ollama service restart initiated successfully. Please wait a moment and then check system status or try your query again.');
+                    setTimeout(checkSystemStatus, 3000); 
+                } else {
+                    alert(`Failed to restart Ollama: ${result.error || result.message || 'Unknown error during restart.'}`);
+                }
+            } catch (error) {
+                console.error('Error restarting Ollama:', error);
+                alert('Failed to send restart command or parse response for Ollama. Please try manually restarting the service.');
+            } finally {
+                restartButton.disabled = false;
+                restartButton.innerHTML = originalButtonText;
+            }
+        }
+        // Attach to the main restart button in the header
+        document.getElementById('restart-ollama').addEventListener('click', handleRestartOllama);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSystemStatus();
+            updateHistoryUI(); // Initialize history UI
+            setInterval(checkSystemStatus, 30000); // Periodically check system status
+        });
+    </script>
+</body>
+</html>
