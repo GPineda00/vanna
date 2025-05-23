@@ -142,7 +142,10 @@
         
         .card-body {
             padding: 1.75rem;
-        }        .form-control {
+        }
+        
+        /* MODIFIED for text wrapping */
+        .form-control, textarea#questionInput.form-control {
             padding: 0.9rem 1.25rem;
             border-radius: var(--input-border-radius);
             border: 1px solid var(--border-color);
@@ -152,6 +155,10 @@
             transition: all 0.3s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset;
             animation: subtle-glow 3s infinite alternate;
+            white-space: pre-wrap; /* Allow wrapping */
+            word-wrap: break-word; /* Break long words */
+            resize: vertical; /* Allow vertical resize, remove if not desired */
+            min-height: 58px; /* Adjust as needed for initial size */
         }
         
         @keyframes subtle-glow {

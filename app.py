@@ -125,7 +125,7 @@ def get_db_schema_elements(vn_instance):
 
         for ddl_content in ddl_statements:
             # Regex to find table names: handles optional schema, quotes, brackets
-            table_matches = re.finditer(r"CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:[\\w_]+\\.)?([`\\"\\\[]?[\\w_]+[`\\"\\\]]?)\\s*\\(", ddl_content, re.IGNORECASE)
+            table_matches = re.finditer(r"CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:[\w_]+\.)?([`\"\[]?[\w_]+[`\"\]]?)\s*\(", ddl_content, re.IGNORECASE)
             
             for table_match in table_matches:
                 table_name = table_match.group(1).strip('`"[]')
@@ -150,7 +150,7 @@ def get_db_schema_elements(vn_instance):
                 cols_block = ddl_content[start_index:end_index]
                 # Regex for column definitions: `col_name` type, "col_name" type, [col_name] type, col_name type
                 # Captures the column name (first group).
-                col_def_matches = re.finditer(r"^\\s*([`\\"\\\[]?[\\w_]+[`\\"\\\]]?)\\s+[\\w_]+(?:[\\(\\w\\s,\\)]*)?\\s*(?:,|\\)|$)", cols_block, re.MULTILINE | re.IGNORECASE)
+                col_def_matches = re.finditer(r"^\s*([`\"\[]?[\w_]+[`\"\]]?)\s+[\w_]+(?:[\(\w\s,\)]*)?\s*(?:,\||$)", cols_block, re.MULTILINE | re.IGNORECASE)
                 for col_match in col_def_matches:
                     col_name = col_match.group(1).strip('`"[]')
                     reserved_keywords = {'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'TABLE', 'CREATE', 'INDEX', 
