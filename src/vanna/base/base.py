@@ -91,32 +91,6 @@ class VannaBase(ABC):
         return f"Respond in the {self.language} language."
 
     def generate_sql(self, question: str, allow_llm_to_see_data=False, **kwargs) -> str:
-        """
-        Example:
-        ```python
-        vn.generate_sql("What are the top 10 customers by sales?")
-        ```
-
-        Uses the LLM to generate a SQL query that answers a question. It runs the following methods:
-
-        - [`get_similar_question_sql`][vanna.base.base.VannaBase.get_similar_question_sql]
-
-        - [`get_related_ddl`][vanna.base.base.VannaBase.get_related_ddl]
-
-        - [`get_related_documentation`][vanna.base.base.VannaBase.get_related_documentation]
-
-        - [`get_sql_prompt`][vanna.base.base.VannaBase.get_sql_prompt]
-
-        - [`submit_prompt`][vanna.base.base.VannaBase.submit_prompt]
-
-
-        Args:
-            question (str): The question to generate a SQL query for.
-            allow_llm_to_see_data (bool): Whether to allow the LLM to see the data (for the purposes of introspecting the data to generate the final SQL).
-
-        Returns:
-            str: The SQL query that answers the question.
-        """
         if self.config is not None:
             initial_prompt = self.config.get("initial_prompt", None)
         else:
