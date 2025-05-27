@@ -12,3 +12,51 @@ psutil>=5.9.0
 requests>=2.28.0
 thefuzz>=0.20.0
 python-Levenshtein>=0.20.9 # Optional, but improves thefuzz performance
+
+# Core dependencies identified from codebase analysis
+sqlparse>=0.4.0             # Used in vanna base for SQL parsing
+kaleido>=0.2.1              # Used by plotly for static image generation
+flask-sock>=0.6.0           # Flask WebSocket support
+flasgger>=0.9.5             # Flask API documentation
+sqlalchemy>=1.4.0           # Database ORM, used in vanna base
+
+# Redis and caching dependencies for optimization
+redis>=4.5.0                # Redis client for caching and session management
+hiredis>=2.2.0              # High-performance Redis parser (optional but recommended)
+
+# AI/ML dependencies
+faiss-cpu>=1.7.0            # FAISS vector similarity search (CPU version)
+transformers>=4.21.0        # Hugging Face transformers for embeddings
+httpx>=0.24.0               # Modern HTTP client, used with Ollama
+
+# Standard library modules (these are built-in, no installation needed):
+# hashlib, pathlib, uuid, threading, collections, datetime, asyncio, pickle, gzip, 
+# contextlib, dataclasses, enum, signal, concurrent.futures, traceback, sys, os, 
+# logging, time, re, json
+
+# Optional AI/ML service dependencies (uncomment as needed):
+# openai>=1.0.0             # OpenAI API
+# anthropic>=0.3.0          # Anthropic Claude API
+# mistralai>=1.0.0          # Mistral AI API
+# google-generativeai>=0.3.0 # Google Gemini API
+# zhipuai>=1.0.0            # ZhipuAI API
+# qianfan>=0.3.0            # Baidu Qianfan API
+# boto3>=1.26.0             # AWS services (for Bedrock)
+# azure-search-documents>=11.4.0 # Azure AI Search
+# azure-identity>=1.13.0    # Azure authentication
+# weaviate-client>=3.21.0   # Weaviate vector database
+# pinecone-client>=2.2.0    # Pinecone vector database
+# qdrant-client>=1.3.0      # Qdrant vector database
+# pymilvus>=2.2.0           # Milvus vector database
+# opensearch-py>=2.2.0      # OpenSearch client
+# marqo>=1.2.0              # Marqo vector search
+# cohere>=4.21.0            # Cohere API
+
+# Database-specific drivers (uncomment as needed):
+# psycopg2-binary>=2.9.0    # PostgreSQL
+# PyMySQL>=1.0.0            # MySQL
+# clickhouse-connect>=0.6.0 # ClickHouse
+# snowflake-connector-python>=3.0.0 # Snowflake
+# google-cloud-bigquery>=3.4.0 # BigQuery
+# duckdb>=0.8.0             # DuckDB
+# oracledb>=1.3.0           # Oracle Database
