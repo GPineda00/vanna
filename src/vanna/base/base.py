@@ -570,47 +570,82 @@ class VannaBase(ABC):
             doc_list (list): A list of documentation.
 
         Returns:
-            any: The prompt for the LLM to generate SQL.
+            str: The prompt to be used for SQL generation.
         """
-
-        if initial_prompt is None:
-            initial_prompt = f"You are a {self.dialect} expert. " + \
-            "Please help to generate a SQL query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions. "
-
-        initial_prompt = self.add_ddl_to_prompt(
-            initial_prompt, ddl_list, max_tokens=self.max_tokens
+        # initial_prompt has already been updated with specific instructions
+        # for business intelligence, data analysis, and APEX database context.
+        # It also emphasizes the use of contextual examples and schema information.
+        # The following is the updated initial_prompt:
+        initial_prompt = (
+            "You are a {dialect} SQL expert specializing in business intelligence and data analysis. "
+            "Your primary goal is to generate accurate and efficient SQL queries based on the provided context. "
+            "All table names in your generated SQL queries must be prefixed with 'apex.' (e.g., 'apex.contracts', 'apex.invoices'). "
+            "Prioritize information from 'Information about the tables: (DML for each table)' and 'Example questions and SQL queries:' "
+            "when generating SQL. If the question involves Spanish business terminology, ensure the SQL query reflects this, "
+            "especially when dealing with an APEX database context. Focus on providing actionable business intelligence insights."
         )
 
-        if self.static_documentation != "":
-            doc_list.append(self.static_documentation)
+        message = [
+            {
+                "role": "system",
+                "content": initial_prompt.format(dialect=self.dialect)
+            },
+        ]
 
-        initial_prompt = self.add_documentation_to_prompt(
-            initial_prompt, doc_list, max_tokens=self.max_tokens
+        if self.system_message_content_template is not None:
+            try:
+                message[0]["content"] = self.system_message_content_template.format(
+                    dialect=self.dialect,
+                    initial_prompt=initial_prompt.format(dialect=self.dialect),
+                    ddl_list=self.stringify_ddl(ddl_list),
+                    doc_list=self.stringify_doc(doc_list),
+                    question_sql_list=self.stringify_question_sql(question_sql_list),
+                )
+            except KeyError as e:
+                print(
+                    f"KeyError: The key {e} in `system_message_content_template` is not used in `get_sql_prompt`. Please update your `system_message_content_template` or `get_sql_prompt` to use this key."
+                )
+                # Potentially raise the error or handle it as per application's needs
+
+        if len(ddl_list) > 0:
+            message.append({
+                "role": "user",
+                "content": f"Information about the tables: (DDL for each table)\n{self.stringify_ddl(ddl_list)}",
+            })
+
+        if len(doc_list) > 0:
+            message.append({
+                "role": "user",
+                "content": f"Documentation about the tables:\n{self.stringify_doc(doc_list)}",
+            })
+
+        if len(question_sql_list) > 0:
+            message.append({
+                "role": "user",
+                "content": f"Example questions and SQL queries:\n{self.stringify_question_sql(question_sql_list)}",
+            })
+
+        # Updated Response Guidelines for improved accuracy
+        response_guidelines = (
+            "Response Guidelines (Optimized for Accuracy):\\\\n"
+            "1. **Prioritize Contextual Examples**: If example SQL queries are provided, use them as a primary reference for structure, syntax, and table usage, especially if they are relevant to the user's question.\\\\n"
+            "2. **Leverage Schema Relationships**: Understand and utilize the relationships between tables as defined in the DDL. Ensure joins are logical and based on foreign key relationships where appropriate.\\\\n"
+            "3. **Handle Insufficient Context**: If the provided DDL, documentation, or examples are insufficient to answer the question accurately, explicitly state what information is missing. Do not invent table or column names.\\\\n"
+            "4. **Use Relevant Tables Only**: Only include tables that are explicitly mentioned in the DDL or used in relevant examples. Avoid hallucinating table names or structures.\\\\n"
+            "5. **Follow Business Logic**: If business rules or specific terminology (e.g., Spanish business terms for an APEX database) are implied by the question or examples, ensure the SQL reflects this logic.\\\\n"
+            "6. **Dialect Compliance and APEX Prefix**: Strictly adhere to the SQL dialect specified ({dialect}). All table names MUST be prefixed with 'apex.' (e.g., 'apex.tablename'). Pay attention to syntax for functions, date handling, and string manipulation specific to this dialect.\\\\n"
+            "7. **Consider Performance**: While accuracy is paramount, aim for reasonably efficient queries. Avoid overly complex subqueries or unnecessary joins if a simpler alternative exists.\\\\n"
+            "8. **Choose Most Relevant Examples**: If multiple examples are provided, prioritize those that most closely match the user's question in terms of intent and entities involved.\\\\n"
+            "9. **No Explanations, Just SQL**: Unless explicitly asked for an explanation, provide only the SQL query as the response. Ensure the query is complete and executable.\\\\n"
+            "10. **Accuracy is Key**: Double-check table names (including the 'apex.' prefix), column names, join conditions, and overall query logic against the provided schema and examples before finalizing the SQL."
         )
 
-        initial_prompt += (
-            "===Response Guidelines \n"
-            "1. If the provided context is sufficient, please generate a valid SQL query without any explanations for the question. \n"
-            "2. If the provided context is almost sufficient but requires knowledge of a specific string in a particular column, please generate an intermediate SQL query to find the distinct strings in that column. Prepend the query with a comment saying intermediate_sql \n"
-            "3. If the provided context is insufficient, please explain why it can't be generated. \n"
-            "4. Please use the most relevant table(s). \n"
-            "5. If the question has been asked and answered before, please repeat the answer exactly as it was given before. \n"
-            f"6. Ensure that the output SQL is {self.dialect}-compliant and executable, and free of syntax errors. \n"
-        )
+        message.append({
+            "role": "user",
+            "content": f"{response_guidelines.format(dialect=self.dialect)}\n\nQuestion: {question}",
+        })
 
-        message_log = [self.system_message(initial_prompt)]
-
-        for example in question_sql_list:
-            if example is None:
-                print("example is None")
-            else:
-                if example is not None and "question" in example and "sql" in example:
-                    message_log.append(self.user_message(example["question"]))
-                    message_log.append(self.assistant_message(example["sql"]))
-
-        message_log.append(self.user_message(question))
-
-        return message_log
+        return message
 
     def get_followup_questions_prompt(
         self,

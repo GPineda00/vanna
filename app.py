@@ -190,23 +190,32 @@ class OllamaVanna(ChromaDB_VectorStore, Ollama):
     def __init__(self, config=None):
         ChromaDB_VectorStore.__init__(self, config=config)
         Ollama.__init__(self, config=config)
-        
-        # Initialize retry count for tracking retry attempts
-        self.retry_count = 0
-        self.max_retries = 3
-        
-        # Set default language
         self.language = "spanish"
-    
+
     @with_ollama_retry(max_retries=3, retry_delay=5)
     def ask_llm(self, question: str, system_message_override: str | None = None): # Added system_message_override
         """
-        Direct prompt to LLM. Can be used for general questions or specific tasks
-        like interpretation if a system_message_override is provided.
+        Enhanced LLM prompt for Llama3.2 with contextual business intelligence.
+        Optimized for Spanish business questions with APEX database context.
         """
         try:
-            system_content = system_message_override if system_message_override else \
-                             "Eres un asistente de IA que proporciona información útil. Responde siempre en español. Sé conciso y directo en tus respuestas."
+            if system_message_override:
+                system_content = system_message_override
+            else:
+                system_content = (
+                    "Eres un asistente de inteligencia empresarial especializado en análisis de datos. "
+                    "Tu especialidad es interpretar consultas de bases de datos y proporcionar insights empresariales. "
+                    "\\n\\nCONTEXTO EMPRESARIAL:\\n"
+                    "- Trabajas con la base de datos APEX que contiene información empresarial crítica\\n"
+                    "- Las consultas pueden involucrar contratos, facturas, inventario, empleados, y operaciones\\n"
+                    "- Siempre proporciona respuestas en español con terminología empresarial apropiada\\n"
+                    "\\nINSTRUCCIONES DE RESPUESTA:\\n"
+                    "1. Sé conciso pero informativo\\n"
+                    "2. Usa términos empresariales apropiados en español\\n"
+                    "3. Proporciona contexto cuando sea relevante\\n"
+                    "4. Si los datos son complejos, resume los hallazgos principales\\n"
+                    "5. NO menciones nombres técnicos de tablas o esquemas"
+                )
             
             messages = [
                 {"role": "system", "content": system_content},
@@ -218,31 +227,23 @@ class OllamaVanna(ChromaDB_VectorStore, Ollama):
         except Exception as e:
             logging.error(f"Error in ask_llm: {str(e)}")
             raise
+        except Exception as e:
+            logging.error(f"Error in ask_llm: {str(e)}")
+            raise
     
     @with_ollama_retry(max_retries=3, retry_delay=5)
     def generate_sql(self, question, *args, **kwargs):
         """
-        Override generate_sql method with retry mechanism and better error handling
+        Override generate_sql method to rely on with_ollama_retry decorator.
+        The actual Ollama interaction happens in self.submit_prompt, called by super().generate_sql.
         """
         try:
             return super().generate_sql(question, *args, **kwargs)
         except Exception as e:
-            # Log the error
-            logging.error(f"Error generating SQL in patched method: {str(e)}")
-            
-            # If we've reached max retries, raise custom error with helpful message
-            if self.retry_count >= self.max_retries:
-                raise SQLGenerationError(
-                    f"Failed to generate SQL after {self.max_retries} attempts. "
-                    "The language model may be overloaded or experiencing issues. "
-                    "Try simplifying your question or try again later."
-                )
-            
-            # Increment retry count and try again
-            self.retry_count += 1
-            # Add a longer delay for each retry
-            time.sleep(self.retry_count * 3)
-            return self.generate_sql(question, *args, **kwargs)
+            # Log the error. The decorator will handle retries.
+            # If retries are exhausted, the decorator will re-raise the exception.
+            logging.error(f"Error in OllamaVanna.generate_sql (will be retried by decorator if applicable): {str(e)}")
+            raise # Re-raise for the decorator or caller to handle
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -439,7 +440,7 @@ vn = OllamaVanna(config={
     'persist_directory': os.getenv('CHROMADB_DIR', './chromadb_data'),
     'ollama_timeout': float(os.getenv('OLLAMA_TIMEOUT', '300.0')),
     'options': {
-        'num_ctx': int(os.getenv('OLLAMA_CONTEXT_SIZE', '8192')),  # Increase context window
+        'num_ctx': int(os.getenv('OLLAMA_CONTEXT_SIZE', '16381')),  # Increase context window
         'num_gpu': int(os.getenv('OLLAMA_NUM_GPU', '1')),          # Number of GPUs to use
         'num_thread': int(os.getenv('OLLAMA_NUM_THREAD', '4')),    # Number of threads to use
         'temperature': float(os.getenv('OLLAMA_TEMPERATURE', '0.1')),  # Lower for more deterministic outputs
@@ -653,13 +654,20 @@ def ask():
                 except Exception as e:
                     app.logger.error(f"Failed to generate direct answer: {str(e)}")
                     # Fall back to SQL generation if direct answer fails
-            
-            # Generate SQL from question if not a direct knowledge question or if direct answer failed
+              # Generate SQL from question if not a direct knowledge question or if direct answer failed
             try:
-                # Augment the question to strongly guide the LLM towards SQL generation
-                sql_generation_prompt = f"User question: \'{corrected_question_to_use}\'. Based on the database schema, generate a SQL query to answer this question. Respond only with the SQL query itself."
+                # Enhanced SQL generation prompt based on research findings for improved accuracy
+                # Using contextual business examples relevant to APEX database
+                sql_generation_prompt = (
+                    f"Question: {corrected_question_to_use}\n\n"
+                    "Context: You are working with the APEX business database containing tables for "
+                    "contracts, invoices, inventory, HR, and operational data. "
+                    "Generate a precise SQL query that answers the question using the most relevant tables. "
+                    "Focus on business intelligence insights and proper joins between related entities. "
+                    "Consider Spanish business terminology and APEX schema conventions."
+                )
                 sql = vn.generate_sql(sql_generation_prompt)
-                app.logger.info(f"Generated SQL: {sql} for augmented prompt: {sql_generation_prompt}")
+                app.logger.info(f"Generated SQL: {sql} for enhanced prompt: {sql_generation_prompt[:100]}...")
             except OllamaProcessError as e:
                 app.logger.error(f"Ollama process terminated: {str(e)}")
                 # Removed fallback to direct answer
@@ -696,7 +704,7 @@ def ask():
                         df_string = df.to_string(index=False)
                         # Limit the string length to avoid overly long prompts
                         # This limit can be adjusted based on typical data size and LLM context window
-                        max_df_string_len = 2000 
+                        max_df_string_len = 8000 
                         if len(df_string) > max_df_string_len:
                             df_string = df_string[:max_df_string_len] + "\\n... (data truncated due to length)"
                             
@@ -708,7 +716,7 @@ def ask():
                             f"Enfócate en responder la pregunta original del usuario basándote en estos datos. "
                             f"Por ejemplo, si los datos muestran un conteo de 2494 para \'solicitudes de anticipo\', podrías decir: "
                             f"\'Actualmente, hay 2494 solicitudes de anticipo.\' "
-                            f"Importante: NO menciones ningún nombre de tabla, esquema, base de datos o servidor en tu respuesta. "
+                            f"Importante: NO menciones nombres de tabla, esquema, base de datos o servidor en tu respuesta. "
                             f"Sé directo e informativo. No te limites a repetir los datos. Si los datos son complejos, resume los hallazgos principales."
                         )
                         app.logger.info("Requesting LLM to interpret SQL results.")
@@ -872,9 +880,16 @@ def ask_advanced():
                     # Use the template to guide SQL generation if provided
                     app.logger.info(f"Using SQL template: {sql_template}")
                     # This would require a custom method in vn, but for now we just generate as normal
-                
-                # Augment the question to strongly guide the LLM towards SQL generation
-                sql_generation_prompt = f"User question: \'{corrected_question_to_use}\'. Based on the database schema, generate a SQL query to answer this question. Respond only with the SQL query itself."
+                  # Enhanced SQL generation prompt for advanced queries with business context
+                sql_generation_prompt = (
+                    f"Question: {corrected_question_to_use}\n\n"
+                    "Context: You are working with the APEX business database containing tables for "
+                    "contracts, invoices, inventory, HR, and operational data. "
+                    "Generate a precise SQL query that answers the question using the most relevant tables. "
+                    "Focus on business intelligence insights and proper joins between related entities. "
+                    "Consider Spanish business terminology and APEX schema conventions. "
+                    "Ensure the query is optimized for performance and returns actionable business insights."
+                )
                 sql = vn.generate_sql(sql_generation_prompt)
                 app.logger.info(f"Generated SQL: {sql} for augmented prompt: {sql_generation_prompt}")
                 
@@ -925,7 +940,7 @@ def ask_advanced():
                             # Convert DataFrame to a string representation for the LLM
                             df_string = df.to_string(index=False)
                             # Limit the string length to avoid overly long prompts
-                            max_df_string_len = 2000 
+                            max_df_string_len = 8000 
                             if len(df_string) > max_df_string_len:
                                 df_string = df_string[:max_df_string_len] + "\\n... (datos truncados debido a la longitud)" # Corrected newline and translated
                             

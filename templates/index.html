@@ -1218,11 +1218,7 @@
         function highlightSQL(sql) {
             if (!sql) return '';
             
-            return escapeHtml(sql)
-                .replace(/\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|INSERT|UPDATE|DELETE|INTO|VALUES|SET|CREATE|TABLE|INDEX|VIEW|WITH|AS|ON|AND|OR|NOT|NULL|IS|IN|LIKE|BETWEEN|CASE|WHEN|THEN|ELSE|END|ASC|DESC|DISTINCT|COUNT|SUM|AVG|MIN|MAX)\b/gi, '<span style="color: #ff79c6; font-weight: 500;">$&</span>')
-                .replace(/\b\d+(\.\d+)?\b/g, '<span style="color: #bd93f9;">$&</span>')
-                .replace(/'([^']*)'/g, '<span style="color: #f1fa8c;">$&</span>')
-                .replace(/(\+|\-|\*|\/|=|<>|>=|<=|>|<|!=)/g, '<span style="color: #ff79c6;">$&</span>');
+            return escapeHtml(sql);
         }
 
         // Utility functions

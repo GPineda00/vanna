@@ -42,62 +42,108 @@ class Ollama(VannaBase):
                    model_response.get('models', [])]
     if model not in model_lists:
       ollama_client.pull(model)
-
   def system_message(self, message: str) -> any:
-    return {"role": "system", "content": message}
+    # Llama3.2 optimized system message format
+    return {"role": "system", "content": f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{message}<|eot_id|>"}
 
   def user_message(self, message: str) -> any:
-    return {"role": "user", "content": message}
+    # Llama3.2 optimized user message format
+    return {"role": "user", "content": f"<|start_header_id|>user<|end_header_id|>\n\n{message}<|eot_id|>"}
 
   def assistant_message(self, message: str) -> any:
-    return {"role": "assistant", "content": message}
-
+    # Llama3.2 optimized assistant message format
+    return {"role": "assistant", "content": f"<|start_header_id|>assistant<|end_header_id|>\n\n{message}<|eot_id|>"}
   def extract_sql(self, llm_response):
     """
-    Extracts the first SQL statement after the word 'select', ignoring case,
-    matches until the first semicolon, three backticks, or the end of the string,
-    and removes three backticks if they exist in the extracted string.
-
+    Enhanced SQL extraction for Llama3.2 with better pattern matching.
+    Prioritizes contextually relevant SQL patterns and handles common Llama3.2 response formats.
+    
     Args:
     - llm_response (str): The string to search within for an SQL statement.
 
     Returns:
-    - str: The first SQL statement found, with three backticks removed, or an empty string if no match is found.
+    - str: The extracted SQL statement, or the original response if no SQL found.
     """
-    # Remove ollama-generated extra characters
+    # Clean up Ollama-specific formatting issues
     llm_response = llm_response.replace("\\_", "_")
     llm_response = llm_response.replace("\\", "")
+    
+    # Remove Llama3.2 chat template artifacts if present
+    llm_response = llm_response.replace("<|begin_of_text|>", "")
+    llm_response = llm_response.replace("<|start_header_id|>", "")
+    llm_response = llm_response.replace("<|end_header_id|>", "")
+    llm_response = llm_response.replace("<|eot_id|>", "")
 
-    # Regular expression to find ```sql' and capture until '```'
-    sql = re.search(r"```sql\n((.|\n)*?)(?=;|\[|```)", llm_response, re.DOTALL)
-    # Regular expression to find 'select, with (ignoring case) and capture until ';', [ (this happens in case of mistral) or end of string
-    select_with = re.search(r'(select|(with.*?as \())(.*?)(?=;|\[|```)',
-                            llm_response,
-                            re.IGNORECASE | re.DOTALL)
-    if sql:
-      self.log(
-        f"Output from LLM: {llm_response} \nExtracted SQL: {sql.group(1)}")
-      return sql.group(1).replace("```", "")
-    elif select_with:
-      self.log(
-        f"Output from LLM: {llm_response} \nExtracted SQL: {select_with.group(0)}")
-      return select_with.group(0)
-    else:
-      return llm_response
+    # Pattern 1: SQL code blocks (highest priority for Llama3.2)
+    sql_block = re.search(r"```sql\s*\n(.*?)```", llm_response, re.DOTALL | re.IGNORECASE)
+    if sql_block:
+      extracted = sql_block.group(1).strip()
+      self.log(f"Output from LLM: {llm_response} \nExtracted SQL: {extracted}")
+      return extracted
 
+    # Pattern 2: WITH clauses (CTEs) - common in business queries
+    with_query = re.search(r'\b(WITH\s+.*?(?:SELECT\s+.*?)?(?:;|$))', llm_response, re.DOTALL | re.IGNORECASE)
+    if with_query:
+      extracted = with_query.group(1).rstrip(';').strip()
+      self.log(f"Output from LLM: {llm_response} \nExtracted SQL: {extracted}")
+      return extracted
+    
+    # Pattern 3: SELECT statements with enhanced matching
+    select_query = re.search(r'\b(SELECT\s+.*?)(?:;|\n\n|$)', llm_response, re.DOTALL | re.IGNORECASE)
+    if select_query:
+      extracted = select_query.group(1).rstrip(';').strip()
+      self.log(f"Output from LLM: {llm_response} \nExtracted SQL: {extracted}")
+      return extracted
+
+    # Pattern 4: Any code block (fallback)
+    code_block = re.search(r"```(.*?)```", llm_response, re.DOTALL | re.IGNORECASE)
+    if code_block:
+      extracted = code_block.group(1).strip()
+      self.log(f"Output from LLM: {llm_response} \nExtracted SQL: {extracted}")
+      return extracted
+
+    # Return original response if no patterns match
+    return llm_response.strip()
   def submit_prompt(self, prompt, **kwargs) -> str:
+    # Enhanced Llama3.2 optimized parameters
+    enhanced_options = {
+        'temperature': 0.1,        # Lower for more deterministic SQL
+        'top_p': 0.9,             # Balanced creativity
+        'top_k': 40,              # Focused token selection
+        'repeat_penalty': 1.1,     # Prevent repetition
+        'num_predict': 512,        # Reasonable response length
+        'stop': ['<|eot_id|>', '<|end_of_text|>', '\n\n\n']  # Stop tokens for Llama3.2
+    }
+    
+    # Merge with existing options, prioritizing enhanced ones
+    final_options = {**self.ollama_options, **enhanced_options}
+    
     self.log(
       f"Ollama parameters:\n"
       f"model={self.model},\n"
-      f"options={self.ollama_options},\n"
+      f"options={final_options},\n"
       f"keep_alive={self.keep_alive}")
     self.log(f"Prompt Content:\n{json.dumps(prompt, ensure_ascii=False)}")
-    response_dict = self.ollama_client.chat(model=self.model,
-                                            messages=prompt,
-                                            stream=False,
-                                            options=self.ollama_options,
-                                            keep_alive=self.keep_alive)
-
-    self.log(f"Ollama Response:\n{str(response_dict)}")
-
-    return response_dict['message']['content']
+    
+    try:
+        response_dict = self.ollama_client.chat(
+            model=self.model,
+            messages=prompt,
+            stream=False,
+            options=final_options,
+            keep_alive=self.keep_alive
+        )
+        
+        self.log(f"Ollama Response:\n{str(response_dict)}")
+        
+        response_content = response_dict['message']['content']
+        
+        # Clean up Llama3.2 artifacts
+        response_content = response_content.replace('<|eot_id|>', '')
+        response_content = response_content.replace('<|end_of_text|>', '')
+        
+        return response_content.strip()
+        
+    except Exception as e:
+        self.log(f"Error in Ollama submit_prompt: {str(e)}")
+        raise
