@@ -32,7 +32,7 @@ class Ollama(VannaBase):
     self.ollama_client = ollama.Client(self.host, timeout=Timeout(self.ollama_timeout))
     self.keep_alive = config.get('keep_alive', None)
     self.ollama_options = config.get('options', {})
-    self.num_ctx = self.ollama_options.get('num_ctx', 2048)
+    self.num_ctx = self.ollama_options.get('num_ctx', 4096)
     self.__pull_model_if_ne(self.ollama_client, self.model)
 
   @staticmethod
